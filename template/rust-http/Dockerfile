@@ -12,15 +12,15 @@ RUN cd main && cargo build --release
 
 FROM ubuntu:latest as runner
 
-RUN mkdir /root/.ssh
-
-ARG ssh_priv_key
-RUN echo "${ssh_priv_key}" >> /root/.ssh/id_rsa
-ARG ssh_pub_key
-RUN echo "${ssh_pub_key}" >> /root/.ssh/id_rsa.pub
-
 # Install packages and add non-root user
 RUN apt-get update && apt-get -y install curl ca-certificates openssl
+
+# Add ssh keys for cloning.
+RUN mkdir $HOME/.ssh
+ARG ssh_priv_key
+RUN echo "${ssh_priv_key}" >> $HOME/.ssh/id_rsa
+ARG ssh_pub_key
+RUN echo "${ssh_pub_key}" >> $HOME/.ssh/id_rsa.pub
 
 # Copy of-watchdog binary
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
